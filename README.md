@@ -40,4 +40,4 @@ O código detectará automaticamente as imagens. Caso elas não existam, o jogo 
 - **JavaScript** (Lógica de colisão, persistência de dados e motor de jogo)
 
 ---
-Developed with 🟢 by **Israel Silva**
+Developed with 🟢 by **Israel Alcantara**
