@@ -15,10 +15,9 @@ Este projeto foi orgulhosamente desenvolvido por **Israel Silva**.
 
 ## 🎨 Como Personalizar (Skins)
 Para usar suas próprias fotos no jogo, basta adicionar os seguintes arquivos na pasta raiz do projeto:
-1. `![WhatsApp Image 2026-03-21 at 23 56 17](https://github.com/user-attachments/assets/993e3c6e-bfb0-429e-92ea-b0e538c4c41a)
-g` - Inicio do jogo.
-2. `corpo.png` - Imagem para os gomos do corpo.
-3. `comida.png` - Imagem para o item colecionável (maçã).
+
+<img width="437" height="541" alt="image" src="https://github.com/user-attachments/assets/b5f7cbbf-911e-4939-b03b-40a2b39a72fd" />
+
 
 O código detectará automaticamente as imagens. Caso elas não existam, o jogo usará o modo de desenho clássico em cores sólidas.
 
