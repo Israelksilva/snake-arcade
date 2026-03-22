@@ -16,6 +16,13 @@ Este projeto foi orgulhosamente desenvolvido por **Israel Silva**.
 ## 🎨 Como Personalizar (Skins)
 Para usar suas próprias fotos no jogo, basta adicionar os seguintes arquivos na pasta raiz do projeto:
 
+Inicio:
+<img width="437" height="537" alt="image" src="https://github.com/user-attachments/assets/f54d5c05-b3d7-4220-b2d1-c0c0ef77fdb7" />
+
+durante o jogo:
+<img width="431" height="569" alt="image" src="https://github.com/user-attachments/assets/dd68c1c7-5330-471e-8b2e-21f0332dfb00" />
+
+Perdeu:
 <img width="437" height="541" alt="image" src="https://github.com/user-attachments/assets/b5f7cbbf-911e-4939-b03b-40a2b39a72fd" />
 
 
