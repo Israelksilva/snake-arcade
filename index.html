@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake - Clássico Reimaginado</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --grid-dark: #11141b;
+            --grid-light: #161b22;
+            --primary-green: #2ecc71;
+            --text-gray: #4a4d53;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        /* Cabeçalho */
+        .header {
+            width: 400px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 15px;
+        }
+        .title h1 { color: var(--primary-green); margin: 0; font-size: 24px; }
+        .title span { color: var(--text-gray); font-size: 10px; text-transform: uppercase; }
+        
+        .score-container { display: flex; gap: 20px; text-align: center; }
+        .score-box label { display: block; font-size: 9px; color: var(--text-gray); }
+        .score-box span { font-size: 20px; font-weight: bold; font-family: monospace; }
+
+        /* Container do Jogo */
+        .game-wrapper {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid #1f232b;
+        }
+
+        canvas { display: block; }
+
+        /* Overlays */
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(13, 17, 23, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 5;
+        }
+        .hidden { display: none !important; }
+
+        .btn-play {
+            background-color: var(--primary-green);
+            color: #0d1117;
+            border: none;
+            padding: 15px 40px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .game-over-text { color: #f85149; font-size: 12px; letter-spacing: 2px; margin-bottom: 5px; }
+        .final-score { font-size: 60px; font-weight: bold; margin-bottom: 5px; }
+        .new-record { color: var(--text-gray); font-size: 12px; margin-bottom: 25px; }
+
+        /* Rodapé Controles */
+        .footer-keys { margin-top: 20px; display: flex; gap: 8px; }
+        .key { width: 30px; height: 30px; border: 1px solid #1f232b; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--text-gray); font-size: 12px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="title">
+            <h1>SNAKE</h1>
+            <span>CLÁSSICO REIMAGINADO</span>
+        </div>
+        <div class="score-container">
+            <div class="score-box"><label>PONTOS</label><span id="pts">000</span></div>
+            <div class="score-box"><label>MELHOR</label><span id="best">000</span></div>
+        </div>
+    </div>
+
+    <div class="game-wrapper">
+        <div id="start-screen" class="overlay">
+            <button class="btn-play" onclick="init()">INICIAR JOGO</button>
+        </div>
+
+        <div id="over-screen" class="overlay hidden">
+            <span class="game-over-text">GAME OVER</span>
+            <span id="res-score" class="final-score">0</span>
+            <span id="record-msg" class="new-record">Novo recorde!</span>
+            <button class="btn-play" onclick="init()">JOGAR NOVAMENTE</button>
+        </div>
+
+        <canvas id="stage" width="400" height="400"></canvas>
+    </div>
+
+    <div class="footer-keys">
+        <div class="key">↑</div><div class="key">←</div><div class="key">↓</div><div class="key">→</div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('stage');
+        const ctx = canvas.getContext('2d');
+        const size = 20;
+        let snake, food, dir, score, loop;
+        let best = localStorage.getItem('snakeBest') || 0;
+        document.getElementById('best').innerText = best.toString().padStart(3, '0');
+
+        function drawGrid() {
+            for (let i = 0; i < 20; i++) {
+                for (let j = 0; j < 20; j++) {
+                    ctx.fillStyle = (i + j) % 2 === 0 ? '#11141b' : '#13171f';
+                    ctx.fillRect(i * size, j * size, size, size);
+                }
+            }
+        }
+
+        function spawnFood() {
+            food = { x: Math.floor(Math.random() * 20) * size, y: Math.floor(Math.random() * 20) * size };
+            if (snake.some(s => s.x === food.x && s.y === food.y)) spawnFood();
+        }
+
+        function init() {
+            snake = [{x: 10*size, y: 10*size}, {x: 10*size, y: 11*size}, {x: 10*size, y: 12*size}];
+            dir = 'UP'; score = 0;
+            document.getElementById('pts').innerText = "000";
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('over-screen').classList.add('hidden');
+            spawnFood();
+            if(loop) clearInterval(loop);
+            loop = setInterval(game, 120);
+        }
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'ArrowUp' && dir !== 'DOWN') dir = 'UP';
+            if (e.key === 'ArrowDown' && dir !== 'UP') dir = 'DOWN';
+            if (e.key === 'ArrowLeft' && dir !== 'RIGHT') dir = 'LEFT';
+            if (e.key === 'ArrowRight' && dir !== 'LEFT') dir = 'RIGHT';
+        });
+
+        function game() {
+            let head = { ...snake[0] };
+            if (dir === 'UP') head.y -= size;
+            if (dir === 'DOWN') head.y += size;
+            if (dir === 'LEFT') head.x -= size;
+            if (dir === 'RIGHT') head.x += size;
+
+            if (head.x < 0 || head.x >= 400 || head.y < 0 || head.y >= 400 || snake.some(s => s.x === head.x && s.y === head.y)) {
+                clearInterval(loop);
+                document.getElementById('res-score').innerText = score;
+                document.getElementById('record-msg').style.visibility = score > best ? 'visible' : 'hidden';
+                if (score > best) {
+                    best = score;
+                    localStorage.setItem('snakeBest', best);
+                    document.getElementById('best').innerText = best.toString().padStart(3, '0');
+                }
+                document.getElementById('over-screen').classList.remove('hidden');
+                return;
+            }
+
+            snake.unshift(head);
+            if (head.x === food.x && head.y === food.y) {
+                score++;
+                document.getElementById('pts').innerText = score.toString().padStart(3, '0');
+                spawnFood();
+            } else {
+                snake.pop();
+            }
+
+            drawGrid();
+
+            // Desenhar Comida
+            ctx.fillStyle = '#f85149';
+            ctx.shadowBlur = 10; ctx.shadowColor = '#f85149';
+            ctx.beginPath(); ctx.arc(food.x + 10, food.y + 10, 6, 0, 7); ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Desenhar Cobra
+            snake.forEach((s, i) => {
+                ctx.fillStyle = i === 0 ? '#42e38a' : '#2ecc71';
+                ctx.beginPath();
+                ctx.roundRect(s.x + 1, s.y + 1, size - 2, size - 2, 4);
+                ctx.fill();
+
+                // Olhinhos na cabeça
+                if (i === 0) {
+                    ctx.fillStyle = 'white';
+                    ctx.beginPath(); ctx.arc(s.x + 6, s.y + 7, 2, 0, 7); ctx.fill();
+                    ctx.beginPath(); ctx.arc(s.x + 14, s.y + 7, 2, 0, 7); ctx.fill();
+                }
+            });
+        }
+        drawGrid(); // Inicial
+    </script>
+</body>
+</html>
